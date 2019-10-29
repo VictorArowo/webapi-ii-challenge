@@ -10,7 +10,7 @@ module.exports = {
   remove,
   findPostComments,
   findCommentById,
-  insertComment,
+  insertComment
 };
 
 function find() {
@@ -24,7 +24,7 @@ function findById(id) {
 function insert(post) {
   return db('posts')
     .insert(post)
-    .then(ids => ({ id: ids[0] }));
+    .then(ids => findById(ids[0]));
 }
 
 function update(id, post) {
@@ -54,5 +54,7 @@ function findCommentById(id) {
 }
 
 function insertComment(comment) {
-  return db('comments').insert(comment).then(ids => ({ id: ids[0] }));
+  return db('comments')
+    .insert(comment)
+    .then(ids => ({ id: ids[0] }));
 }
