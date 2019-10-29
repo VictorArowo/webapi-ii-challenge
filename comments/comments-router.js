@@ -1,18 +1,9 @@
 const express = require('express');
 const db = require('../data/db');
-const redis = require('redis');
-
-const client = redis.createClient(6379);
 
 const router = express.Router();
 
-client.on('error', err => {
-  console.log('Error ' + err);
-});
-
-client.on('connect', function() {
-  console.log('Redis client connected');
-});
+const client = require('../redisClient');
 
 router.get('/:id/comments', (req, res) => {
   const { id } = req.params;
@@ -28,7 +19,7 @@ router.get('/:id/comments', (req, res) => {
           client.setex(postRedisKey, 10, JSON.stringify(data));
 
           return data.length
-            ? res.status(200).json({ ...data, source: 'api' })
+            ? res.status(200).json({ source: 'api', data })
             : res.status(404).json({
                 message: 'The post with the specified ID does not exist.'
               });

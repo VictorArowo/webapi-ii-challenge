@@ -3,14 +3,27 @@ const db = require('../data/db');
 
 const router = express.Router();
 
+const client = require('../redisClient');
+
 router.get('/', (req, res) => {
-  db.find()
-    .then(data => {
-      res.status(200).json(data);
-    })
-    .catch(error => {
-      res.status(500).json({ error });
-    });
+  const commentRedisKey = 'comments';
+
+  return client.get(commentRedisKey, (err, comments) => {
+    if (comments) {
+      return res
+        .status(200)
+        .json({ source: 'cache', data: JSON.parse(comments) });
+    }
+
+    db.find()
+      .then(data => {
+        client.setex(commentRedisKey, 10, JSON.stringify(data));
+        res.status(200).json({ source: 'api', data});
+      })
+      .catch(error => {
+        res.status(500).json({ error });
+      });
+  });
 });
 
 router.get('/:id', (req, res) => {
