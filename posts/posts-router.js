@@ -88,7 +88,7 @@ router.put('/:id', (req, res) => {
   db.update(id, post)
     .then(data => {
       return data
-        ? res.status(200).json({ id, ...post })
+        ? res.status(200).json(data[0])
         : res.status(404).json({
             message: 'The post with the specified ID does not exist.'
           });

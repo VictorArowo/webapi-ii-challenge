@@ -30,7 +30,8 @@ function insert(post) {
 function update(id, post) {
   return db('posts')
     .where('id', Number(id))
-    .update(post);
+    .update(post)
+    .then(() => findById(id));
 }
 
 function remove(id) {
